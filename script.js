@@ -206,4 +206,55 @@
 
   window.verPDF = verPDF;
   window.verPDFSpread = verPDFSpread;
+
+  // ---- REGLA DE ESCALA: PROGRESO DE SCROLL ----
+  const rulerFill = $('#scrollRulerFill');
+  function updateScrollRuler() {
+    if (!rulerFill) return;
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - doc.clientHeight;
+    const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+    rulerFill.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', updateScrollRuler, { passive: true });
+  window.addEventListener('resize', updateScrollRuler);
+  updateScrollRuler();
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- ESCUADRAS DE REGISTRO + BARRIDO TIPO PLANO ----
+  // Se inyectan por JS para no repetir el mismo par de <span> a mano
+  // en cada una de las tarjetas del portfolio, premios, certificados, etc.
+  const blueprintTargets = $$('.project-panel, .award-card, .cert-row, .skills-category, .contact-item-modern, .hero-card, .avatar-frame, .architect-pill');
+  blueprintTargets.forEach(el => {
+    if (!el.querySelector('.corner-ticks')) {
+      const ticks = document.createElement('span');
+      ticks.className = 'corner-ticks';
+      ticks.setAttribute('aria-hidden', 'true');
+      el.appendChild(ticks);
+    }
+    if (!el.querySelector('.blueprint-sweep')) {
+      const sweep = document.createElement('span');
+      sweep.className = 'blueprint-sweep';
+      sweep.setAttribute('aria-hidden', 'true');
+      el.appendChild(sweep);
+    }
+  });
+
+  // ---- TILT SUAVE TIPO LÁMINA TÉCNICA ----
+  if (!prefersReducedMotion) {
+    const tiltTargets = $$('.project-panel, .hero-card, .avatar-frame');
+    tiltTargets.forEach(el => {
+      el.setAttribute('data-tilt', '');
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        el.style.transform = `perspective(900px) rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg) translateY(-8px)`;
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = '';
+      });
+    });
+  }
 })();
