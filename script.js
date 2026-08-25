@@ -43,10 +43,12 @@ const pdfModalTitle = document.getElementById('pdfModalTitle');
 const pdfDownloadLink = document.getElementById('pdfDownloadLink');
 const closePdfModalBtn = document.getElementById('closePdfModalBtn');
 const closePdfModalBtn2 = document.getElementById('closePdfModalBtn2');
+let currentPdfTitleKey = '';
 
 function verPDF(rutaPDF, titulo) {
     if (!pdfModal) return;
-    pdfModalTitle.innerHTML = `<i class="fas fa-file-pdf"></i> ${titulo}`;
+    currentPdfTitleKey = titulo;
+    pdfModalTitle.innerHTML = `<i class="fas fa-file-pdf"></i> ${window.t ? window.t(titulo) : titulo}`;
     pdfIframe.src = rutaPDF;
     pdfDownloadLink.href = rutaPDF;
     pdfModal.classList.add('active');
@@ -85,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Feedback visual en el botón
                         const originalHTML = copyBtn.innerHTML;
-                        copyBtn.innerHTML = '<i class="fas fa-check"></i><span>Copiado!</span>';
+                        copyBtn.innerHTML = `<i class="fas fa-check"></i><span>${window.t ? window.t('Copiado!') : 'Copiado!'}</span>`;
                         setTimeout(() => {
                             copyBtn.innerHTML = originalHTML;
                         }, 1500);
@@ -184,6 +186,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
+
+window.addEventListener('portfolioLanguageChanged', () => {
+    if (currentPdfTitleKey && pdfModalTitle) {
+        pdfModalTitle.innerHTML = `<i class="fas fa-file-pdf"></i> ${window.t ? window.t(currentPdfTitleKey) : currentPdfTitleKey}`;
+    }
+});
 
 if (closePdfModalBtn) closePdfModalBtn.addEventListener('click', cerrarPdfModal);
 if (closePdfModalBtn2) closePdfModalBtn2.addEventListener('click', cerrarPdfModal);
