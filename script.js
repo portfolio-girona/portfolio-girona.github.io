@@ -1,205 +1,209 @@
-// ---- PESTAÑAS CV ----
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const tab = btn.getAttribute('data-tab');
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tab)?.classList.add('active-tab');
-    btn.classList.add('active');
+// ====================
+// PORTFOLIO GIRONA · INTERACCIONES
+// ====================
+(function(){
+  'use strict';
+
+  const $ = (selector, scope = document) => scope.querySelector(selector);
+  const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
+
+  // ---- PESTAÑAS CV ----
+  $$('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.getAttribute('data-tab');
+      $$('.tab-content').forEach(c => c.classList.remove('active-tab'));
+      $$('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tab)?.classList.add('active-tab');
+      btn.classList.add('active');
+    });
   });
-});
 
-// ---- MODAL RECTORADO ----
-const rectorModal = document.getElementById('rectorModal');
-document.getElementById('openRectorModalBtn')?.addEventListener('click', () => rectorModal.classList.add('active'));
-document.getElementById('closeModalBtn')?.addEventListener('click', () => rectorModal.classList.remove('active'));
+  // ---- MODALES ----
+  const rectorModal = $('#rectorModal');
+  const cvModal = $('#cvModal');
+  const pdfModal = $('#pdfModal');
+  const pdfIframe = $('#pdfIframe');
+  const pdfModalTitle = $('#pdfModalTitle');
+  const pdfDownloadLink = $('#pdfDownloadLink');
+  let currentPdfTitleKey = '';
 
-// ---- MODAL CV ----
-const cvModal = document.getElementById('cvModal');
-document.getElementById('openCvModalBtn')?.addEventListener('click', () => cvModal.classList.add('active'));
-document.getElementById('closeCvModalBtn')?.addEventListener('click', () => cvModal.classList.remove('active'));
+  $('#openRectorModalBtn')?.addEventListener('click', () => openModal(rectorModal));
+  $('#closeModalBtn')?.addEventListener('click', () => closeModal(rectorModal));
+  $('#openCvModalBtn')?.addEventListener('click', () => openModal(cvModal));
+  $('#closeCvModalBtn')?.addEventListener('click', () => closeModal(cvModal));
+  $('#closePdfModalBtn')?.addEventListener('click', closePdfModal);
+  $('#closePdfModalBtn2')?.addEventListener('click', closePdfModal);
 
-// ---- CERRAR MODALES AL CLICK EN OVERLAY ----
-window.addEventListener('click', (e) => {
-  if (e.target.classList.contains('modal-overlay')) {
-    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
-    document.body.style.overflow = 'auto';
+  function openModal(modal){
+    if (!modal) return;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
   }
-});
 
-// ---- COPYABLE ----
-document.querySelectorAll('.copyable').forEach(el => {
-  el.addEventListener('click', () => {
-    navigator.clipboard.writeText(el.getAttribute('data-copy'));
-    const toast = document.getElementById('toast-message');
-    if (toast) { toast.style.opacity = '1'; setTimeout(() => toast.style.opacity = '0', 2000); }
+  function closeModal(modal){
+    if (!modal) return;
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  window.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+      $$('.modal-overlay').forEach(m => m.classList.remove('active'));
+      document.body.style.overflow = '';
+      if (e.target === pdfModal) {
+        setTimeout(() => { if (pdfIframe) pdfIframe.src = ''; }, 300);
+      }
+    }
   });
-});
 
-// ========== VISOR PDF SIMPLE CON IFRAME ==========
-const pdfModal = document.getElementById('pdfModal');
-const pdfIframe = document.getElementById('pdfIframe');
-const pdfModalTitle = document.getElementById('pdfModalTitle');
-const pdfDownloadLink = document.getElementById('pdfDownloadLink');
-const closePdfModalBtn = document.getElementById('closePdfModalBtn');
-const closePdfModalBtn2 = document.getElementById('closePdfModalBtn2');
-let currentPdfTitleKey = '';
-
-function verPDF(rutaPDF, titulo) {
-    if (!pdfModal) return;
+  function verPDF(rutaPDF, titulo) {
+    if (!pdfModal || !pdfIframe || !pdfDownloadLink) return;
     currentPdfTitleKey = titulo;
-    pdfModalTitle.innerHTML = `<i class="fas fa-file-pdf"></i> ${window.t ? window.t(titulo) : titulo}`;
+    if (pdfModalTitle) {
+      pdfModalTitle.innerHTML = `<i class="fas fa-file-pdf"></i> ${window.t ? window.t(titulo) : titulo}`;
+    }
     pdfIframe.src = rutaPDF;
     pdfDownloadLink.href = rutaPDF;
-    pdfModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
+    openModal(pdfModal);
+  }
 
-function verPDFSpread(rutaPDF, titulo) { verPDF(rutaPDF, titulo); }
+  function verPDFSpread(rutaPDF, titulo) { verPDF(rutaPDF, titulo); }
 
-function cerrarPdfModal() {
-    pdfModal.classList.remove('active');
-    setTimeout(() => { pdfIframe.src = ''; }, 300);
-    document.body.style.overflow = '';
-}
+  function closePdfModal() {
+    closeModal(pdfModal);
+    setTimeout(() => { if (pdfIframe) pdfIframe.src = ''; }, 300);
+  }
 
-
-// ====================
-// FUNCIÓN COPIAR (para teléfono y email)
-// ====================
-
-document.addEventListener('DOMContentLoaded', function() {
-    const copyItems = document.querySelectorAll('.contact-item-modern[data-contacto]');
-    const toast = document.getElementById('copyToast');
-    
-    copyItems.forEach(item => {
-        const copyBtn = item.querySelector('.contact-copy-modern');
-        
-        if (copyBtn) {
-            copyBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const textoACopiar = item.getAttribute('data-contacto');
-                
-                if (textoACopiar) {
-                    navigator.clipboard.writeText(textoACopiar).then(() => {
-                        // Mostrar toast
-                        showToast();
-                        
-                        // Feedback visual en el botón
-                        const originalHTML = copyBtn.innerHTML;
-                        copyBtn.innerHTML = `<i class="fas fa-check"></i><span>${window.t ? window.t('Copiado!') : 'Copiado!'}</span>`;
-                        setTimeout(() => {
-                            copyBtn.innerHTML = originalHTML;
-                        }, 1500);
-                    }).catch(() => {
-                        // Fallback
-                        fallbackCopy(textoACopiar);
-                    });
-                }
-            });
-        }
-    });
-
-// ====================
-// BOTÓN FLOTANTE - SECCIÓN ACTIVA
-// ====================
-
-document.addEventListener('DOMContentLoaded', function() {
-    const floatingItems = document.querySelectorAll('.floating-item');
-    const sections = document.querySelectorAll('section[id]');
-    const floatingNav = document.querySelector('.floating-nav');
-    
-    // Función para detectar qué sección está visible
-    function highlightActiveSection() {
-        let scrollPosition = window.scrollY + 120; // Offset para mejor detección
-        
-        let activeSection = null;
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionBottom = sectionTop + section.offsetHeight;
-            
-            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-                activeSection = section.getAttribute('id');
-            }
-        });
-        
-        // Remover clase active de todos los items
-        floatingItems.forEach(item => {
-            item.classList.remove('active');
-        });
-        
-        // Agregar clase active al item correspondiente
-        if (activeSection) {
-            const activeItem = document.querySelector(`.floating-item[href="#${activeSection}"]`);
-            if (activeItem) {
-                activeItem.classList.add('active');
-                
-                // Opcional: Actualizar el texto del botón principal
-                const mainLabel = document.querySelector('.floating-label');
-                const activeText = activeItem.querySelector('span').textContent;
-                if (mainLabel && activeText !== 'Índice') {
-                    // mainLabel.textContent = activeText; // Descomentar si quieres que muestre la sección actual
-                }
-            }
-        }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      $$('.modal-overlay.active').forEach(closeModal);
+      if (pdfModal?.classList.contains('active')) closePdfModal();
     }
-    
-    // Escuchar evento scroll
-    window.addEventListener('scroll', highlightActiveSection);
-    
-    // Ejecutar al cargar
-    highlightActiveSection();
-    
-    // Scroll suave al hacer clic
-    floatingItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                targetSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-});
+  });
 
-    function showToast() {
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 2000);
-    }
-    
-    function fallbackCopy(text) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
+  // ---- COPIAR CONTACTO ----
+  function showToast() {
+    const toast = $('#copyToast');
+    if (!toast) return;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  function fallbackCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    showToast();
+  }
+
+  $$('.contact-item-modern[data-contacto]').forEach(item => {
+    const copyBtn = $('.contact-copy-modern', item);
+    if (!copyBtn) return;
+
+    copyBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const textoACopiar = item.getAttribute('data-contacto');
+      if (!textoACopiar) return;
+
+      const originalHTML = copyBtn.innerHTML;
+      const setDone = () => {
         showToast();
+        copyBtn.innerHTML = `<i class="fas fa-check"></i><span>${window.t ? window.t('Copiado!') : 'Copiado!'}</span>`;
+        setTimeout(() => { copyBtn.innerHTML = originalHTML; }, 1500);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textoACopiar).then(setDone).catch(() => {
+          fallbackCopy(textoACopiar);
+          setDone();
+        });
+      } else {
+        fallbackCopy(textoACopiar);
+        setDone();
+      }
+    });
+  });
+
+  // ---- BOTÓN FLOTANTE - SECCIÓN ACTIVA ----
+  const floatingItems = $$('.floating-item');
+  const sections = $$('section[id]');
+
+  function highlightActiveSection() {
+    const scrollPosition = window.scrollY + 150;
+    let activeSection = null;
+
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionBottom = sectionTop + section.offsetHeight;
+      if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+        activeSection = section.getAttribute('id');
+      }
+    });
+
+    floatingItems.forEach(item => item.classList.remove('active'));
+    if (activeSection) {
+      document.querySelector(`.floating-item[href="#${activeSection}"]`)?.classList.add('active');
     }
-});
+  }
 
+  window.addEventListener('scroll', highlightActiveSection, { passive:true });
+  highlightActiveSection();
 
+  floatingItems.forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 
-window.addEventListener('portfolioLanguageChanged', () => {
+  // ---- REVEAL ON SCROLL ----
+  const revealTargets = $$('.reveal, .about-card, .section-header, .award-card, .cv-item, .skills-category, .project-panel, .cert-row, .contact-item-modern, .contact-footer');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.14, rootMargin: '0px 0px -40px 0px' });
+
+    revealTargets.forEach((el, index) => {
+      el.style.transitionDelay = `${Math.min(index % 4, 3) * 70}ms`;
+      observer.observe(el);
+    });
+  } else {
+    revealTargets.forEach(el => el.classList.add('is-visible'));
+  }
+
+  // ---- PARALLAX HERO SUTIL ----
+  const heroBg = $('.hero-bg');
+  const heroCard = $('.hero-card');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (heroBg && y < window.innerHeight) {
+      heroBg.style.transform = `scale(1.04) translateY(${y * 0.05}px)`;
+    }
+    if (heroCard && y < window.innerHeight) {
+      heroCard.style.transform = `translateY(${Math.min(y * 0.03, 16)}px)`;
+    }
+  }, { passive:true });
+
+  // ---- ACTUALIZAR TITULO DEL PDF AL CAMBIAR IDIOMA ----
+  window.addEventListener('portfolioLanguageChanged', () => {
     if (currentPdfTitleKey && pdfModalTitle) {
-        pdfModalTitle.innerHTML = `<i class="fas fa-file-pdf"></i> ${window.t ? window.t(currentPdfTitleKey) : currentPdfTitleKey}`;
+      pdfModalTitle.innerHTML = `<i class="fas fa-file-pdf"></i> ${window.t ? window.t(currentPdfTitleKey) : currentPdfTitleKey}`;
     }
-});
+  });
 
-if (closePdfModalBtn) closePdfModalBtn.addEventListener('click', cerrarPdfModal);
-if (closePdfModalBtn2) closePdfModalBtn2.addEventListener('click', cerrarPdfModal);
-if (pdfModal) pdfModal.addEventListener('click', (e) => { if (e.target === pdfModal) cerrarPdfModal(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pdfModal?.classList.contains('active')) cerrarPdfModal(); });
-document.getElementById('verPdfNotaBtn')?.addEventListener('click', () => window.open('pdfs/nota_rectorado.pdf', '_blank'));
-document.getElementById('verPdfCvBtn')?.addEventListener('click', () => window.open('pdfs/cv_completo.pdf', '_blank'));
-window.verPDF = verPDF;
-window.verPDFSpread = verPDFSpread;
+  // ---- ACCESOS DIRECTOS PDFs ----
+  $('#verPdfNotaBtn')?.addEventListener('click', () => window.open('pdfs/nota_rectorado.pdf', '_blank'));
+  $('#verPdfCvBtn')?.addEventListener('click', () => window.open('pdfs/cv_completo.pdf', '_blank'));
 
+  window.verPDF = verPDF;
+  window.verPDFSpread = verPDFSpread;
+})();
