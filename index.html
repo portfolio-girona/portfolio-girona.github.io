@@ -266,20 +266,30 @@
   }
 }
 
-/* ---------- Banderitas del selector de idioma ---------- */
+
+/* ---------- Banderitas del selector de idioma · SVG ---------- */
 .language-switcher .lang-btn{
-  gap:6px;
-  min-width:60px;
+  gap:7px;
+  min-width:64px;
   padding:0 12px;
 }
 
-.language-switcher .lang-flag{
+.language-switcher .lang-flag-svg{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  font-size:.95rem;
-  line-height:1;
-  transform:translateY(-.5px);
+  width:18px;
+  height:12px;
+  border-radius:3px;
+  overflow:hidden;
+  box-shadow:0 0 0 1px rgba(36,49,41,.12), 0 1px 2px rgba(0,0,0,.08);
+  flex:0 0 auto;
+}
+
+.language-switcher .lang-flag-svg svg{
+  display:block;
+  width:100%;
+  height:100%;
 }
 
 .language-switcher .lang-code{
@@ -289,12 +299,13 @@
 
 @media (max-width:700px){
   .language-switcher .lang-btn{
-    min-width:56px;
-    gap:5px;
+    min-width:58px;
+    gap:6px;
     padding:0 10px;
   }
-  .language-switcher .lang-flag{
-    font-size:.9rem;
+  .language-switcher .lang-flag-svg{
+    width:17px;
+    height:11px;
   }
 }
 
@@ -306,15 +317,41 @@
 <!-- Selector de idioma -->
 <div class="language-switcher" role="group" aria-label="Idioma / Language / Lingua">
   <button class="lang-btn active" type="button" data-lang="es" aria-pressed="true" aria-label="Español">
-    <span class="lang-flag" aria-hidden="true">🇪🇸</span>
+    <span class="lang-flag-svg" aria-hidden="true">
+      <svg viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bandera de España">
+        <rect width="18" height="12" rx="2" fill="#C60B1E"/>
+        <rect y="3" width="18" height="6" fill="#FFC400"/>
+      </svg>
+    </span>
     <span class="lang-code">ES</span>
   </button>
   <button class="lang-btn" type="button" data-lang="en" aria-pressed="false" aria-label="English">
-    <span class="lang-flag" aria-hidden="true">🇬🇧</span>
+    <span class="lang-flag-svg" aria-hidden="true">
+      <svg viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flag of the United Kingdom">
+        <defs>
+          <clipPath id="ukClip"><rect width="18" height="12" rx="2" ry="2"/></clipPath>
+        </defs>
+        <g clip-path="url(#ukClip)">
+          <rect width="18" height="12" fill="#012169"/>
+          <path d="M0 0 L18 12 M18 0 L0 12" stroke="#FFFFFF" stroke-width="3"/>
+          <path d="M0 0 L18 12 M18 0 L0 12" stroke="#C8102E" stroke-width="1.4"/>
+          <rect x="7" width="4" height="12" fill="#FFFFFF"/>
+          <rect y="4" width="18" height="4" fill="#FFFFFF"/>
+          <rect x="7.7" width="2.6" height="12" fill="#C8102E"/>
+          <rect y="4.7" width="18" height="2.6" fill="#C8102E"/>
+        </g>
+      </svg>
+    </span>
     <span class="lang-code">EN</span>
   </button>
   <button class="lang-btn" type="button" data-lang="it" aria-pressed="false" aria-label="Italiano">
-    <span class="lang-flag" aria-hidden="true">🇮🇹</span>
+    <span class="lang-flag-svg" aria-hidden="true">
+      <svg viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bandera de Italia">
+        <rect width="18" height="12" rx="2" fill="#FFFFFF"/>
+        <rect width="6" height="12" rx="2" fill="#009246"/>
+        <rect x="12" width="6" height="12" rx="2" fill="#CE2B37"/>
+      </svg>
+    </span>
     <span class="lang-code">IT</span>
   </button>
 </div>
